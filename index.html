@@ -65,6 +65,11 @@
 
     .btn-add { background: #2374E1; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px; width: 100%; font-family: inherit; }
 
+    /* أزرار النسخ الاحتياطي */
+    .backup-row { display: flex; gap: 10px; margin-top: 10px; }
+    .btn-backup { flex: 1; background: #2D3748; color: #E4E6EB; border: 1px solid #4A5568; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; text-align: center; transition: background 0.2s; }
+    .btn-backup:hover { background: #4A5568; }
+
     .group-item { display: flex; flex-direction: column; padding: 15px 0; border-bottom: 1px solid #3E4042; gap: 12px; }
     .group-item:last-child { border-bottom: none; padding-bottom: 0; }
     .group-item.done { opacity: 0.5; background-color: #1c2b20; border-radius: 8px; padding: 15px 10px; border-bottom: none; }
@@ -130,6 +135,13 @@
         <input type="text" id="newName" placeholder="اسم المجموعة...">
       </div>
       <button class="btn-add" onclick="addNewGroup()">➕ إضافة إلى القائمة</button>
+
+      <!-- أزرار أخذ واستعادة نسخة احتياطية -->
+      <div class="backup-row">
+        <button class="btn-backup" onclick="exportData()">💾 تصدير المجموعات</button>
+        <button class="btn-backup" onclick="triggerImport()">📂 استيراد المجموعات</button>
+        <input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(event)">
+      </div>
     </div>
 
     <div class="card" id="groupsList">
@@ -198,6 +210,57 @@
     let groups = JSON.parse(localStorage.getItem('solarGroupsList')) || [];
 
     function saveGroupsData() { localStorage.setItem('solarGroupsList', JSON.stringify(groups)); }
+
+    // دوال النسخ الاحتياطي (تصدير واستيراد)
+    function exportData() {
+      if (groups.length === 0) {
+        alert('القائمة فارغة لتصديرها!');
+        return;
+      }
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(groups, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "groups_backup.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function triggerImport() {
+      document.getElementById('importFile').click();
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported)) {
+            if (confirm(`تم العثور على ${imported.length} مجموعة. هل تريد دمجها مع القائمة الحالية أم استبدالها؟\nموافق = استبدال الكل | إلغاء = دمج`)) {
+              groups = imported;
+            } else {
+              // دمج بدون تكرار الروابط
+              imported.forEach(impGroup => {
+                if (!groups.some(g => g.link.toLowerCase() === impGroup.link.toLowerCase())) {
+                  groups.push(impGroup);
+                }
+              });
+            }
+            saveGroupsData();
+            renderList();
+            alert('تم استيراد المجموعات بنجاح!');
+          } else {
+            alert('ملف غير صالح!');
+          }
+        } catch (err) {
+          alert('حدث خطأ أثناء قراءة الملف.');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = ''; // إعادة تعيين الحقل
+    }
 
     function addNewGroup() {
       const linkInput = document.getElementById('newLink');
