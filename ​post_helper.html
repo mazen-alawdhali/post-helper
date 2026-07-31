@@ -39,8 +39,9 @@
     .card { background: #242526; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); width: 100%; box-sizing: border-box; border: 1px solid #333; }
     .card h3 { margin: 0 0 10px 0; font-size: 16px; color: #E4E6EB; }
 
-    .toolbar { display: flex; gap: 8px; margin-bottom: 10px; width: 100%; flex-wrap: wrap; }
-    .toolbar button { background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 13px; transition: background 0.2s; }
+    /* شريط تنسيق النص في سطر واحد */
+    .toolbar { display: flex; gap: 6px; margin-bottom: 10px; width: 100%; }
+    .toolbar button { flex: 1; background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 8px 2px; border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 12px; white-space: nowrap; text-align: center; transition: background 0.2s; }
     .toolbar button:active { background-color: #555; }
     .toolbar button:hover { background-color: #4A4B4C; }
 
@@ -48,8 +49,13 @@
     #postEditor:focus { border-color: #4599FF; }
     #postEditor::placeholder { color: #B0B3B8; }
     
-    .btn-copy { background: #31A24C; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: 700; font-family: inherit; transition: 0.3s; }
+    /* أزرار النسخ والحذف متساوية الحجم تماماً */
+    .actions-row { display: flex; gap: 10px; width: 100%; }
+    .btn-copy { flex: 1; background: #31A24C; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 700; font-family: inherit; transition: 0.3s; text-align: center; }
     .btn-copy.copied { background: #2b8f42; }
+    
+    .btn-clear { flex: 1; background: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 700; font-family: inherit; transition: background 0.2s, border-color 0.2s; text-align: center; }
+    .btn-clear:hover { background: #E41E3F; border-color: #E41E3F; color: white; }
 
     .input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
     .input-group input { width: 100%; padding: 12px; background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; border-radius: 8px; font-size: 14px; box-sizing: border-box; font-family: inherit; }
@@ -103,14 +109,18 @@
 
     <div class="card">
       <div class="toolbar">
-        <button onclick="formatText('【 ', ' 】')" title="عنوان مؤطر">【 عنوان 】</button>
-        <button onclick="insertSeparator()" title="سطر فاصل">════ فاصل</button>
+        <button onclick="formatText('【 ', ' 🔥')" title="عنوان مؤطر">【 عنوان 】</button>
+        <button onclick="insertSeparator()" title="سطر فاصل">══ فاصل</button>
         <button onclick="formatText('🔹 ', '')" title="نقطة قائمة">🔹 نقطة</button>
         <button onclick="formatText('✅ ', '')" title="صح">✅ تم</button>
       </div>
 
       <textarea id="postEditor" placeholder="اكتب نص المنشور هنا... (سيتم حفظه تلقائياً)" oninput="savePostText(); autoResize(this)"></textarea>
-      <button class="btn-copy" id="copyBtn" onclick="copyText()">📋 نسخ المنشور</button>
+      
+      <div class="actions-row">
+        <button class="btn-copy" id="copyBtn" onclick="copyText()">📋 نسخ المنشور</button>
+        <button class="btn-clear" onclick="clearText()">🗑️ مسح النص</button>
+      </div>
     </div>
 
     <div class="card">
@@ -172,6 +182,17 @@
         copyBtn.innerHTML = '✔️ تم النسخ بنجاح!'; copyBtn.classList.add('copied');
         setTimeout(() => { copyBtn.innerHTML = '📋 نسخ المنشور'; copyBtn.classList.remove('copied'); }, 2000);
       }).catch(err => { alert('فشل النسخ تلقائياً، يرجى النسخ يدوياً.'); });
+    }
+
+    function clearText() {
+      const textarea = document.getElementById('postEditor');
+      if (!textarea.value.trim()) return;
+      if (confirm('هل أنت متأكد من مسح نص المنشور الحالي؟')) {
+        textarea.value = '';
+        savePostText();
+        autoResize(textarea);
+        textarea.focus();
+      }
     }
 
     let groups = JSON.parse(localStorage.getItem('solarGroupsList')) || [];
