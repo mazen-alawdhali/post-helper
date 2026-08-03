@@ -39,7 +39,7 @@
     .card { background: #242526; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); width: 100%; box-sizing: border-box; border: 1px solid #333; }
     .card h3 { margin: 0 0 10px 0; font-size: 16px; color: #E4E6EB; }
 
-    /* شريط تنسيق النص في سطر واحد */
+    /* شريط تنسيق النص */
     .toolbar { display: flex; gap: 6px; margin-bottom: 10px; width: 100%; }
     .toolbar button { flex: 1; background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 8px 2px; border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 12px; white-space: nowrap; text-align: center; transition: background 0.2s; }
     .toolbar button:active { background-color: #555; }
@@ -49,14 +49,15 @@
     #postEditor:focus { border-color: #4599FF; }
     #postEditor::placeholder { color: #B0B3B8; }
     
-    /* أزرار النسخ والحذف متساوية الحجم تماماً */
+    /* أزرار النسخ والحذف */
     .actions-row { display: flex; gap: 10px; width: 100%; }
     .btn-copy { flex: 1; background: #31A24C; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 700; font-family: inherit; transition: 0.3s; text-align: center; }
     .btn-copy.copied { background: #2b8f42; }
     
-    .btn-clear { flex: 1; background: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 700; font-family: inherit; transition: background 0.2s, border-color 0.2s; text-align: center; }
+    .btn-clear { flex: 1; background: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 700; font-family: inherit; transition: 0.2s; text-align: center; }
     .btn-clear:hover { background: #E41E3F; border-color: #E41E3F; color: white; }
 
+    /* الإدخال */
     .input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
     .input-group input { width: 100%; padding: 12px; background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; border-radius: 8px; font-size: 14px; box-sizing: border-box; font-family: inherit; }
     .input-group input::placeholder { color: #B0B3B8; }
@@ -65,56 +66,65 @@
 
     .btn-add { background: #2374E1; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px; width: 100%; font-family: inherit; }
 
-    /* أزرار النسخ الاحتياطي */
+    /* النسخ الاحتياطي */
     .backup-row { display: flex; gap: 10px; margin-top: 10px; }
-    .btn-backup { flex: 1; background: #2D3748; color: #E4E6EB; border: 1px solid #4A5568; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; text-align: center; transition: background 0.2s; }
+    .btn-backup { flex: 1; background: #2D3748; color: #E4E6EB; border: 1px solid #4A5568; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; text-align: center; transition: 0.2s; }
     .btn-backup:hover { background: #4A5568; }
 
+    /* أدوات التحكم: الفلترة والبحث والعداد */
+    .controls-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    #progressCounter { font-size: 14px; font-weight: 700; color: #B0B3B8; }
+    #progressCounter span { color: #31A24C; font-size: 16px; }
+    
+    .btn-reset { background: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 600; transition: 0.2s; }
+    .btn-reset:hover { background: #E41E3F; border-color: #E41E3F; color: white; }
+    
+    #searchInput { width: 100%; padding: 10px 12px; background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; border-radius: 8px; font-size: 14px; box-sizing: border-box; font-family: inherit; margin-bottom: 12px; outline: none; }
+    #searchInput:focus { border-color: #4599FF; }
+    
+    .filter-tabs { display: flex; gap: 8px; width: 100%; }
+    .filter-tabs button { flex: 1; background-color: #3A3B3C; color: #B0B3B8; border: 1px solid #555; padding: 8px 4px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: bold; transition: 0.3s; white-space: nowrap; text-align: center; }
+    .filter-tabs button.active { background-color: #2374E1; color: white; border-color: #2374E1; }
+
+    /* قائمة المجموعات */
     .group-item { display: flex; flex-direction: column; padding: 15px 0; border-bottom: 1px solid #3E4042; gap: 12px; }
     .group-item:last-child { border-bottom: none; padding-bottom: 0; }
+    
+    .group-favorite { cursor: pointer; font-size: 20px; color: #F6B024; user-select: none; margin-top: 1px; flex-shrink: 0; }
+    .group-item.favorite { background-color: rgba(246, 176, 36, 0.08); border-radius: 8px; padding: 15px 10px; border-bottom: none; }
+    
     .group-item.done { opacity: 0.5; background-color: #1c2b20; border-radius: 8px; padding: 15px 10px; border-bottom: none; }
+    .group-item.done.favorite { background-color: rgba(28, 43, 32, 0.8); opacity: 0.6; }
 
     .group-info { display: flex; align-items: flex-start; gap: 10px; width: 100%; }
-    .group-num { color: #B0B3B8; font-size: 14px; font-weight: 700; min-width: 15px; margin-top: 3px; }
+    .group-num { color: #B0B3B8; font-size: 14px; font-weight: 700; min-width: 15px; margin-top: 4px; }
     
-    input[type="checkbox"] { transform: scale(1.4); margin: 4px 5px 0 5px; cursor: pointer; accent-color: #31A24C; flex-shrink: 0; }
-    .group-name { font-size: 15px; font-weight: 600; color: #E4E6EB; word-break: break-word; line-height: 1.5; flex: 1; }
+    input[type="checkbox"] { transform: scale(1.4); margin: 6px 5px 0 5px; cursor: pointer; accent-color: #31A24C; flex-shrink: 0; }
+    .group-name { font-size: 15px; font-weight: 600; color: #E4E6EB; word-break: break-word; line-height: 1.5; flex: 1; margin-top: 1px; }
     
-    .group-actions { display: flex; gap: 10px; padding-right: 38px; }
+    .group-actions { display: flex; gap: 10px; padding-right: 70px; }
     .btn-open, .btn-delete { flex: 1; color: white; border: none; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; text-align: center; }
     .btn-open { background: #2374E1; }
     .btn-delete { background: #E41E3F; }
 
-    /* حقوق الملكية والتطوير */
-    .app-footer {
-      text-align: center;
-      padding: 15px 0 5px 0;
-      color: #B0B3B8;
-      font-size: 13px;
-      border-top: 1px solid #2F3031;
-      margin-top: 10px;
-    }
-    .app-footer a {
-      text-decoration: none;
-    }
-    .app-footer strong {
-      color: #4599FF;
-      font-weight: 700;
-      transition: color 0.3s ease;
-    }
-    .app-footer a:hover strong {
-      color: #2374E1;
-    }
+    .btn-top { background: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 700; width: 100%; font-family: inherit; transition: 0.3s; margin-top: 5px; text-align: center; }
+    .btn-top:hover { background: #4599FF; color: white; border-color: #4599FF; }
+
+    .app-footer { text-align: center; padding: 15px 0 5px 0; color: #B0B3B8; font-size: 13px; border-top: 1px solid #2F3031; margin-top: 10px; }
+    .app-footer a { text-decoration: none; }
+    .app-footer strong { color: #4599FF; font-weight: 700; transition: color 0.3s ease; }
+    .app-footer a:hover strong { color: #2374E1; }
   </style>
 </head>
 <body>
 
   <div class="app-container">
-    <h2>مساعد النشر 📢</h2>
+    <h2 id="topAnchor">مساعد النشر 📢</h2>
 
+    <!-- كارت كتابة المنشور -->
     <div class="card">
       <div class="toolbar">
-        <button onclick="formatText('【 ', ' 🔥')" title="عنوان مؤطر">【 عنوان 】</button>
+        <button onclick="formatText('【 ', ' 】')" title="عنوان مؤطر">【 عنوان 】</button>
         <button onclick="insertSeparator()" title="سطر فاصل">══ فاصل</button>
         <button onclick="formatText('🔹 ', '')" title="نقطة قائمة">🔹 نقطة</button>
         <button onclick="formatText('✅ ', '')" title="صح">✅ تم</button>
@@ -128,6 +138,7 @@
       </div>
     </div>
 
+    <!-- كارت إضافة المجموعات -->
     <div class="card">
       <h3>إضافة مجموعة جديدة:</h3>
       <div class="input-group">
@@ -136,7 +147,6 @@
       </div>
       <button class="btn-add" onclick="addNewGroup()">➕ إضافة إلى القائمة</button>
 
-      <!-- أزرار أخذ واستعادة نسخة احتياطية -->
       <div class="backup-row">
         <button class="btn-backup" onclick="exportData()">💾 تصدير المجموعات</button>
         <button class="btn-backup" onclick="triggerImport()">📂 استيراد المجموعات</button>
@@ -144,11 +154,29 @@
       </div>
     </div>
 
+    <!-- كارت البحث والفلترة -->
+    <div class="card">
+      <div class="controls-header">
+        <div id="progressCounter">إنجاز: <span>0</span> / 0</div>
+        <button class="btn-reset" onclick="resetProgress()">🔄 إعادة تعيين الكل</button>
+      </div>
+      
+      <input type="text" id="searchInput" placeholder="🔍 ابحث عن اسم المجموعة..." oninput="renderList()">
+      
+      <div class="filter-tabs">
+        <button id="tab-all" class="active" onclick="setFilter('all')">الكل</button>
+        <button id="tab-fav" onclick="setFilter('fav')">⭐ المفضلة</button>
+        <button id="tab-todo" onclick="setFilter('todo')">⏳ قيد الانتظار</button>
+      </div>
+    </div>
+
+    <!-- كارت قائمة المجموعات -->
     <div class="card" id="groupsList">
       <!-- سيتم إدراج المجموعات هنا -->
     </div>
+    
+    <button class="btn-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">⬆️ العودة لأعلى الصفحة</button>
 
-    <!-- شريط حقوق الملكية مع الرابط -->
     <div class="app-footer">
       جميع الحقوق محفوظة © <span id="currentYear"></span> | تطوير: <a href="https://www.facebook.com/share/1FwEecrEPq/" target="_blank" rel="noopener noreferrer"><strong>م. مازن العوذلي</strong></a>
     </div>
@@ -161,11 +189,16 @@
       const end = textarea.selectionEnd;
       const text = textarea.value;
       const selectedText = text.substring(start, end);
+      
+      // إدراج الأقواس مع وضع المؤشر في المنتصف تماماً بينهما
       textarea.value = text.substring(0, start) + startTag + selectedText + endTag + text.substring(end);
       textarea.focus();
-      if (selectedText.length === 0) { textarea.selectionStart = textarea.selectionEnd = start + startTag.length; } 
-      else { textarea.selectionStart = textarea.selectionEnd = start + startTag.length + selectedText.length + endTag.length; }
-      savePostText(); autoResize(textarea);
+      
+      const newCursorPos = start + startTag.length + selectedText.length;
+      textarea.selectionStart = textarea.selectionEnd = newCursorPos;
+
+      savePostText(); 
+      autoResize(textarea);
     }
 
     function insertSeparator() {
@@ -179,10 +212,7 @@
       savePostText(); autoResize(textarea);
     }
 
-    function autoResize(element) {
-      element.style.height = 'auto'; 
-      element.style.height = (element.scrollHeight) + 'px'; 
-    }
+    function autoResize(element) { element.style.height = 'auto'; element.style.height = (element.scrollHeight) + 'px'; }
 
     function savePostText() { localStorage.setItem('savedPostText', document.getElementById('postEditor').value); }
     
@@ -200,23 +230,17 @@
       const textarea = document.getElementById('postEditor');
       if (!textarea.value.trim()) return;
       if (confirm('هل أنت متأكد من مسح نص المنشور الحالي؟')) {
-        textarea.value = '';
-        savePostText();
-        autoResize(textarea);
-        textarea.focus();
+        textarea.value = ''; savePostText(); autoResize(textarea); textarea.focus();
       }
     }
 
     let groups = JSON.parse(localStorage.getItem('solarGroupsList')) || [];
+    let currentFilter = 'all';
 
     function saveGroupsData() { localStorage.setItem('solarGroupsList', JSON.stringify(groups)); }
 
-    // دوال النسخ الاحتياطي (تصدير واستيراد)
     function exportData() {
-      if (groups.length === 0) {
-        alert('القائمة فارغة لتصديرها!');
-        return;
-      }
+      if (groups.length === 0) return alert('القائمة فارغة لتصديرها!');
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(groups, null, 2));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
@@ -226,9 +250,7 @@
       downloadAnchor.remove();
     }
 
-    function triggerImport() {
-      document.getElementById('importFile').click();
-    }
+    function triggerImport() { document.getElementById('importFile').click(); }
 
     function importData(event) {
       const file = event.target.files[0];
@@ -238,88 +260,99 @@
         try {
           const imported = JSON.parse(e.target.result);
           if (Array.isArray(imported)) {
-            if (confirm(`تم العثور على ${imported.length} مجموعة. هل تريد دمجها مع القائمة الحالية أم استبدالها؟\nموافق = استبدال الكل | إلغاء = دمج`)) {
+            if (confirm(`تم العثور على ${imported.length} مجموعة.\nموافق = استبدال الكل | إلغاء = دمج`)) {
               groups = imported;
             } else {
-              // دمج بدون تكرار الروابط
               imported.forEach(impGroup => {
-                if (!groups.some(g => g.link.toLowerCase() === impGroup.link.toLowerCase())) {
-                  groups.push(impGroup);
-                }
+                if (!groups.some(g => g.link.toLowerCase() === impGroup.link.toLowerCase())) groups.push(impGroup);
               });
             }
-            saveGroupsData();
-            renderList();
-            alert('تم استيراد المجموعات بنجاح!');
-          } else {
-            alert('ملف غير صالح!');
-          }
-        } catch (err) {
-          alert('حدث خطأ أثناء قراءة الملف.');
-        }
+            saveGroupsData(); renderList(); alert('تم الاستيراد بنجاح!');
+          } else alert('ملف غير صالح!');
+        } catch (err) { alert('حدث خطأ أثناء قراءة الملف.'); }
       };
       reader.readAsText(file);
-      event.target.value = ''; // إعادة تعيين الحقل
+      event.target.value = ''; 
     }
 
     function addNewGroup() {
       const linkInput = document.getElementById('newLink');
       const nameInput = document.getElementById('newName');
-      
       let link = linkInput.value.trim();
       const name = nameInput.value.trim() || 'اسم المجموعة';
 
-      if (!link) {
-        alert('الرجاء إدخال رابط المجموعة أولاً.');
-        return;
-      }
+      if (!link) return alert('الرجاء إدخال رابط المجموعة أولاً.');
       if (!link.startsWith('http')) link = 'https://' + link;
 
-      const isLinkDuplicate = groups.some(group => group.link.toLowerCase() === link.toLowerCase());
-      const isNameDuplicate = groups.some(group => group.name.toLowerCase() === name.toLowerCase() && name !== 'اسم المجموعة');
+      if (groups.some(group => group.link.toLowerCase() === link.toLowerCase())) return alert('⚠️ عذراً، هذا الرابط موجود مسبقاً!');
+      if (groups.some(group => group.name.toLowerCase() === name.toLowerCase() && name !== 'اسم المجموعة')) return alert('⚠️ عذراً، يوجد مجموعة بهذا الاسم مسبقاً!');
 
-      if (isLinkDuplicate) {
-        alert('⚠️ عذراً، هذا الرابط موجود مسبقاً في القائمة!');
-        return;
-      }
+      groups.push({ id: Date.now(), name: name, link: link, done: false, favorite: false });
+      saveGroupsData(); renderList();
+      linkInput.value = ''; nameInput.value = '';
+    }
 
-      if (isNameDuplicate) {
-        alert('⚠️ عذراً، يوجد مجموعة بهذا الاسم مسبقاً! يرجى اختيار اسم آخر لتمييزها.');
-        return;
-      }
-
-      groups.push({ id: Date.now(), name: name, link: link, done: false });
-      saveGroupsData();
+    function setFilter(filterType) {
+      currentFilter = filterType;
+      document.querySelectorAll('.filter-tabs button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('tab-' + filterType).classList.add('active');
       renderList();
+    }
 
-      linkInput.value = '';
-      nameInput.value = '';
-
-      setTimeout(() => {
-        const list = document.getElementById('groupsList');
-        if (list.lastElementChild) list.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }, 100);
+    function resetProgress() {
+      if(groups.length === 0) return;
+      if (confirm('هل أنت متأكد من مسح جميع علامات الصح لبدء النشر من جديد؟')) {
+        groups.forEach(g => g.done = false);
+        saveGroupsData();
+        renderList();
+      }
     }
 
     function renderList() {
       const listContainer = document.getElementById('groupsList');
       listContainer.innerHTML = '';
+      
+      const searchTerm = (document.getElementById('searchInput').value || '').toLowerCase();
+      
+      const doneCount = groups.filter(g => g.done).length;
+      document.getElementById('progressCounter').innerHTML = `إنجاز: <span>${doneCount}</span> / ${groups.length}`;
+
       if (groups.length === 0) {
         listContainer.innerHTML = '<div style="text-align:center; color:#B0B3B8; font-size: 14px; padding:10px;">لا توجد مجموعات مضافة بعد.</div>';
         return;
       }
-      groups.forEach((group, index) => {
+
+      const filteredGroups = groups.filter(group => {
+        const matchesSearch = group.name.toLowerCase().includes(searchTerm);
+        let matchesFilter = true;
+        if (currentFilter === 'fav') matchesFilter = group.favorite === true;
+        if (currentFilter === 'todo') matchesFilter = group.done === false;
+        
+        return matchesSearch && matchesFilter;
+      });
+
+      if (filteredGroups.length === 0) {
+        listContainer.innerHTML = '<div style="text-align:center; color:#B0B3B8; font-size: 14px; padding:10px;">لا توجد نتائج مطابقة لعملية البحث أو التصفية.</div>';
+        return;
+      }
+
+      filteredGroups.forEach((group) => {
+        const originalIndex = groups.indexOf(group);
+        const isFav = group.favorite ? '⭐' : '☆';
+        const favClass = group.favorite ? 'favorite' : '';
         const item = document.createElement('div');
-        item.className = `group-item ${group.done ? 'done' : ''}`;
+        
+        item.className = `group-item ${group.done ? 'done' : ''} ${favClass}`;
         item.innerHTML = `
           <div class="group-info">
-            <span class="group-num">${index + 1}</span>
-            <input type="checkbox" ${group.done ? 'checked' : ''} onchange="toggleDone(${index}, this.checked)">
+            <span class="group-num">${originalIndex + 1}</span>
+            <span class="group-favorite" onclick="toggleFavorite(${originalIndex})" title="تمييز كمفضلة">${isFav}</span>
+            <input type="checkbox" ${group.done ? 'checked' : ''} onchange="toggleDone(${originalIndex}, this.checked)">
             <span class="group-name">${group.name}</span>
           </div>
           <div class="group-actions">
             <button class="btn-open" onclick="openGroup('${group.link}')">فتح</button>
-            <button class="btn-delete" onclick="deleteGroup(${index})">حذف</button>
+            <button class="btn-delete" onclick="deleteGroup(${originalIndex})">حذف</button>
           </div>
         `;
         listContainer.appendChild(item);
@@ -327,18 +360,15 @@
     }
 
     function toggleDone(index, isChecked) { groups[index].done = isChecked; saveGroupsData(); renderList(); }
+    function toggleFavorite(index) { groups[index].favorite = !groups[index].favorite; saveGroupsData(); renderList(); }
     function openGroup(link) { window.open(link, '_blank'); }
-    function deleteGroup(index) {
-      if (confirm('هل أنت متأكد من حذف هذه المجموعة؟')) { groups.splice(index, 1); saveGroupsData(); renderList(); }
-    }
+    function deleteGroup(index) { if (confirm('هل أنت متأكد من حذف هذه المجموعة؟')) { groups.splice(index, 1); saveGroupsData(); renderList(); } }
 
     window.onload = function() {
       const savedText = localStorage.getItem('savedPostText');
       const editor = document.getElementById('postEditor');
       if (savedText) { editor.value = savedText; autoResize(editor); }
       renderList();
-
-      // تحديث السنة تلقائياً
       document.getElementById('currentYear').textContent = new Date().getFullYear();
     };
   </script>
