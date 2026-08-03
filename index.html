@@ -16,7 +16,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📢</text></svg>">
   
   <!-- ملف Manifest مدمج لتثبيت التطبيق -->
-  <link rel="manifest" href='data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%20%D8%A7%D9%84%D9%86%D8%B4%D8%B1%22%2C%22short_name%22%3A%22%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%20%D8%A7%D9%84%D9%86%D8%B4%D8%B1%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2318191A%22%2C%22theme_color%22%3A%22%2318191A%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Butf8%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Ctext%20y%3D%27.9em%27%20font-size%3D%2790%27%3E%F0%9F%93%A2%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D'>
+  <link rel="manifest" href='data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%20%D8%A7%D9%84%D9%86%D8%B4%D8%B1%22%2C%22short_name%22%3A%22%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%20%D8%A7%D9%84%D9%86%D8%B4%D8%B1%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2318191A%22%2C%22theme_color%22%3A%22%2318191A%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Fxml%3Butf8%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Ctext%20y%3D%27.9em%27%20font-size%3D%2790%27%3E%F0%9F%93%A2%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Fxml%22%7D%5D%7D'>
 
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
   
@@ -140,9 +140,12 @@
 
     <!-- كارت إضافة المجموعات -->
     <div class="card">
-      <h3 style="display: flex; justify-content: space-between; align-items: center;">
-        <span>إضافة مجموعة جديدة:</span>
-        <span id="totalGroupsBadge" style="background: #3A3B3C; padding: 2px 10px; border-radius: 6px; font-size: 14px; color: #4599FF;">0</span>
+      <h3 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <span>إضافة مجموعة جديدة</span>
+        <span id="totalGroupsBadge" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(69, 153, 255, 0.2); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; border: 1px solid rgba(69, 153, 255, 0.4); direction: ltr;">
+          <svg style="width: 18px; height: 18px; fill: #4599FF;" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          <span id="groupsCountNum" style="color: #FFFFFF;">0</span>
+        </span>
       </h3>
       <div class="input-group">
         <input type="url" id="newLink" placeholder="...الصق رابط المجموعة هنا..." dir="ltr">
@@ -193,7 +196,6 @@
       const text = textarea.value;
       const selectedText = text.substring(start, end);
       
-      // إدراج الأقواس مع وضع المؤشر في المنتصف تماماً بينهما
       textarea.value = text.substring(0, start) + startTag + selectedText + endTag + text.substring(end);
       textarea.focus();
       
@@ -317,14 +319,13 @@
       
       const searchTerm = (document.getElementById('searchInput').value || '').toLowerCase();
       
-      // تحديث عداد الإنجاز
       const doneCount = groups.filter(g => g.done).length;
       document.getElementById('progressCounter').innerHTML = `إنجاز: <span>${doneCount}</span> / ${groups.length}`;
       
-      // تحديث شارة إجمالي المجموعات بجانب العنوان
-      const totalGroupsBadge = document.getElementById('totalGroupsBadge');
-      if (totalGroupsBadge) {
-        totalGroupsBadge.textContent = groups.length;
+      // تحديث رقم المجموعات داخل الشارة الأيقونية
+      const groupsCountNum = document.getElementById('groupsCountNum');
+      if (groupsCountNum) {
+        groupsCountNum.textContent = groups.length;
       }
 
       if (groups.length === 0) {
