@@ -90,7 +90,9 @@
     .group-item { display: flex; flex-direction: column; padding: 15px 0; border-bottom: 1px solid #3E4042; gap: 12px; }
     .group-item:last-child { border-bottom: none; padding-bottom: 0; }
     
-    .group-favorite { cursor: pointer; font-size: 20px; color: #F6B024; user-select: none; margin-top: 1px; flex-shrink: 0; }
+    .group-favorite { cursor: pointer; font-size: 22px; color: #F6B024; user-select: none; padding: 4px 8px; border-radius: 6px; transition: background 0.2s; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
+    .group-favorite:active { background: rgba(246, 176, 36, 0.2); }
+    
     .group-item.favorite { background-color: rgba(246, 176, 36, 0.08); border-radius: 8px; padding: 15px 10px; border-bottom: none; }
     
     .group-item.done { opacity: 0.5; background-color: #1c2b20; border-radius: 8px; padding: 15px 10px; border-bottom: none; }
@@ -322,7 +324,6 @@
       const doneCount = groups.filter(g => g.done).length;
       document.getElementById('progressCounter').innerHTML = `إنجاز: <span>${doneCount}</span> / ${groups.length}`;
       
-      // تحديث رقم المجموعات داخل الشارة الأيقونية
       const groupsCountNum = document.getElementById('groupsCountNum');
       if (groupsCountNum) {
         groupsCountNum.textContent = groups.length;
@@ -348,7 +349,8 @@
       }
 
       filteredGroups.forEach((group) => {
-        const originalIndex = groups.indexOf(group);
+        // استخدام findIndex بالاعتماد على الرابط لضمان دقة العنصر الأساسي 100% أثناء الفلترة
+        const originalIndex = groups.findIndex(g => g.link === group.link);
         const isFav = group.favorite ? '⭐' : '☆';
         const favClass = group.favorite ? 'favorite' : '';
         const item = document.createElement('div');
