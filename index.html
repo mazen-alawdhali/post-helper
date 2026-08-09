@@ -16,7 +16,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📢</text></svg>">
   
   <!-- ملف Manifest مدمج لتثبيت التطبيق -->
-  <link rel="manifest" href='data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%20%D8%A7%D9%84%D9%86%D8%B4%D8%B1%22%2C%22short_name%22%3A%22%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%20%D8%A7%D9%84%D9%86%D8%B4%D8%B1%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2318191A%22%2C%22theme_color%22%3A%22%2318191A%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Fxml%3Butf8%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Ctext%20y%3D%27.9em%27%20font-size%3D%2790%27%3E%F0%9F%93%A2%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Fxml%22%7D%5D%7D'>
+  <link rel="manifest" href='data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%20%D8%A7%D9%84%D9%86%D8%B4%D8%B1%22%2C%22short_name%22%3A%22%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%20%D8%A7%D9%84%D9%86%D8%B4%D8%B1%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2318191A%22%2C%22theme_color%22%3A%22%2318191A%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Butf8%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Ctext%20y%3D%27.9em%27%20font-size%3D%2790%27%3E%F0%9F%93%A2%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D'>
 
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
   
@@ -112,6 +112,46 @@
     .btn-top { background: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 700; width: 100%; font-family: inherit; transition: 0.3s; margin-top: 5px; text-align: center; }
     .btn-top:hover { background: #4599FF; color: white; border-color: #4599FF; }
 
+    /* تصميم النافذة المنبثقة المخصصة (Custom Modal) */
+    .custom-modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(3px);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 9999;
+      opacity: 0; animation: fadeIn 0.2s forwards;
+    }
+    .custom-modal {
+      background: #242526; border: 1px solid #38393A;
+      width: 85%; max-width: 380px; padding: 22px;
+      border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      text-align: center; font-family: 'Cairo', sans-serif;
+      transform: scale(0.9); animation: scaleUp 0.2s forwards;
+    }
+    .custom-modal-title {
+      font-size: 17px; font-weight: 700; color: #E4E6EB;
+      margin-bottom: 12px; line-height: 1.5;
+    }
+    .custom-modal-buttons {
+      display: flex; gap: 10px; margin-top: 20px;
+    }
+    .custom-modal-btn {
+      flex: 1; padding: 11px; border-radius: 8px; font-size: 14px;
+      font-weight: 700; cursor: pointer; font-family: inherit; border: none;
+      transition: 0.2s;
+    }
+    .modal-btn-cancel {
+      background: #3A3B3C; color: #E4E6EB; border: 1px solid #555;
+    }
+    .modal-btn-cancel:hover { background: #4A4B4C; }
+    .modal-btn-confirm {
+      background: #E41E3F; color: white;
+    }
+    .modal-btn-confirm:hover { background: #c51633; }
+
+    @keyframes fadeIn { to { opacity: 1; } }
+    @keyframes scaleUp { to { transform: scale(1); } }
+
     .app-footer { text-align: center; padding: 15px 0 5px 0; color: #B0B3B8; font-size: 13px; border-top: 1px solid #2F3031; margin-top: 10px; }
     .app-footer a { text-decoration: none; }
     .app-footer strong { color: #4599FF; font-weight: 700; transition: color 0.3s ease; }
@@ -136,7 +176,7 @@
       
       <div class="actions-row">
         <button class="btn-copy" id="copyBtn" onclick="copyText()">📋 نسخ المنشور</button>
-        <button class="btn-clear" onclick="clearText()">🗑️ مسح النص</button>
+        <button class="btn-clear" onclick="clearText()">🗑️ إزالة النص</button>
       </div>
     </div>
 
@@ -236,9 +276,9 @@
     function clearText() {
       const textarea = document.getElementById('postEditor');
       if (!textarea.value.trim()) return;
-      if (confirm('هل أنت متأكد من مسح نص المنشور الحالي؟')) {
+      showCustomConfirm('هل أنت متأكد من إزالة نص المنشور الحالي؟', () => {
         textarea.value = ''; savePostText(); autoResize(textarea); textarea.focus();
-      }
+      });
     }
 
     let groups = JSON.parse(localStorage.getItem('solarGroupsList')) || [];
@@ -267,14 +307,15 @@
         try {
           const imported = JSON.parse(e.target.result);
           if (Array.isArray(imported)) {
-            if (confirm(`تم العثور على ${imported.length} مجموعة.\nموافق = استبدال الكل | إلغاء = دمج`)) {
+            showCustomConfirm(`تم العثور على ${imported.length} مجموعة.\nهل تريد استبدال القائمة الحالية؟\n(موافق = استبدال | إلغاء = دمج)`, () => {
               groups = imported;
-            } else {
+              saveGroupsData(); renderList(); alert('تم الاستيراد بنجاح!');
+            }, () => {
               imported.forEach(impGroup => {
                 if (!groups.some(g => g.link.toLowerCase() === impGroup.link.toLowerCase())) groups.push(impGroup);
               });
-            }
-            saveGroupsData(); renderList(); alert('تم الاستيراد بنجاح!');
+              saveGroupsData(); renderList(); alert('تم دمج المجموعات بنجاح!');
+            });
           } else alert('ملف غير صالح!');
         } catch (err) { alert('حدث خطأ أثناء قراءة الملف.'); }
       };
@@ -308,11 +349,11 @@
 
     function resetProgress() {
       if(groups.length === 0) return;
-      if (confirm('هل أنت متأكد من مسح جميع علامات الصح لبدء النشر من جديد؟')) {
+      showCustomConfirm('هل أنت متأكد من إزالة جميع علامات الصح لبدء النشر من جديد؟', () => {
         groups.forEach(g => g.done = false);
         saveGroupsData();
         renderList();
-      }
+      });
     }
 
     function renderList() {
@@ -349,7 +390,6 @@
       }
 
       filteredGroups.forEach((group) => {
-        // استخدام findIndex بالاعتماد على الرابط لضمان دقة العنصر الأساسي 100% أثناء الفلترة
         const originalIndex = groups.findIndex(g => g.link === group.link);
         const isFav = group.favorite ? '⭐' : '☆';
         const favClass = group.favorite ? 'favorite' : '';
@@ -375,7 +415,46 @@
     function toggleDone(index, isChecked) { groups[index].done = isChecked; saveGroupsData(); renderList(); }
     function toggleFavorite(index) { groups[index].favorite = !groups[index].favorite; saveGroupsData(); renderList(); }
     function openGroup(link) { window.open(link, '_blank'); }
-    function deleteGroup(index) { if (confirm('هل أنت متأكد من حذف هذه المجموعة؟')) { groups.splice(index, 1); saveGroupsData(); renderList(); } }
+    function deleteGroup(index) { 
+      showCustomConfirm('هل أنت متأكد من حذف هذه المجموعة؟', () => {
+        groups.splice(index, 1); saveGroupsData(); renderList();
+      }); 
+    }
+
+    /* دالة إظهار نافذة التأكيد المخصصة العصرية */
+    function showCustomConfirm(message, onConfirm, onCancel) {
+      const overlay = document.createElement('div');
+      overlay.className = 'custom-modal-overlay';
+      
+      overlay.innerHTML = `
+        <div class="custom-modal">
+          <div class="custom-modal-title">${message.replace(/\n/g, '<br>')}</div>
+          <div class="custom-modal-buttons">
+            <button class="custom-modal-btn modal-btn-cancel" id="modalCancelBtn">إلغاء</button>
+            <button class="custom-modal-btn modal-btn-confirm" id="modalConfirmBtn">موافق</button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      document.getElementById('modalConfirmBtn').onclick = function() {
+        overlay.remove();
+        if (onConfirm) onConfirm();
+      };
+
+      document.getElementById('modalCancelBtn').onclick = function() {
+        overlay.remove();
+        if (onCancel) onCancel();
+      };
+
+      overlay.onclick = function(e) {
+        if (e.target === overlay) {
+          overlay.remove();
+          if (onCancel) onCancel();
+        }
+      };
+    }
 
     window.onload = function() {
       const savedText = localStorage.getItem('savedPostText');
