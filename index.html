@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>مساعد النشر - Post Helper</title>
+  <title>مساعد النشر - Post Helper Pro</title>
   
   <!-- إعدادات تطبيق الويب (PWA) -->
   <meta name="theme-color" content="#18191A">
@@ -15,10 +15,11 @@
   <!-- أيقونة مكبر الصوت للمتصفح -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📢</text></svg>">
   
-  <!-- ملف Manifest مدمج لتثبيت التطبيق -->
-  <link rel="manifest" href='data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%20%D8%A7%D9%84%D9%86%D8%B4%D8%B1%22%2C%22short_name%22%3A%22%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%20%D8%A7%D9%84%D9%86%D8%B4%D8%B1%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2318191A%22%2C%22theme_color%22%3A%22%2318191A%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Butf8%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Ctext%20y%3D%27.9em%27%20font-size%3D%2790%27%3E%F0%9F%93%A2%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D'>
-
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- مكتبات Firebase السحابية -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   
   <style>
     body {
@@ -198,7 +199,7 @@
       <div class="backup-row">
         <button class="btn-backup" onclick="exportData()">💾 تصدير المجموعات</button>
         <button class="btn-backup" onclick="triggerImport()">📂 استيراد المجموعات</button>
-        <input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(event)">
+        <input type="file" id="importFile" style="display:none" accept=".json,application/json,text/plain" onchange="importData(event)">
       </div>
     </div>
 
@@ -231,6 +232,72 @@
   </div>
 
   <script>
+    // إعدادات Firebase الخاصة بك
+    const firebaseConfig = {
+      apiKey: "AIzaSyA89DKwcT9Kke59BdpFR5MgE-iQFYF7k6Q",
+      authDomain: "posthelperpro.firebaseapp.com",
+      projectId: "posthelperpro",
+      storageBucket: "posthelperpro.firebasestorage.app",
+      messagingSenderId: "867686946998",
+      appId: "1:867686946998:web:4660f6531f9b089ad0ae17",
+      measurementId: "G-Y6BHWKVJJL"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let groups = [];
+    let currentFilter = 'all';
+
+    // دالة الهجرة الآمنة من الذاكرة المحلية للجوال للسحابة
+    async function checkAndMigrate() {
+      const localData = localStorage.getItem('solarGroupsList');
+      if (!localData || localStorage.getItem('migrationDone') === 'true') return false;
+      try {
+        const parsed = JSON.parse(localData);
+        if (parsed && Array.isArray(parsed) && parsed.length > 0) {
+          if (confirm("تم العثور على مجموعات مخزنة محلياً في جهازك. هل تريد نقلها إلى السحابة (Firebase) لتصبح محفوظة بشكل دائم؟")) {
+            await db.collection("groupsData").doc("mainList").set({ items: parsed });
+            localStorage.setItem('migrationDone', 'true');
+            alert("تم نقل مجموعاتك بنجاح إلى السحابة!");
+            return true;
+          }
+        }
+      } catch(e) {
+        console.error("خطأ في عملية النقل:", e);
+      }
+      return false;
+    }
+
+    // جلب البيانات من سحابة Firebase أو الهجرة التلقائية
+    function loadGroupsFromCloud() {
+      db.collection("groupsData").doc("mainList").get().then(async (doc) => {
+        if (doc.exists && doc.data().items && doc.data().items.length > 0) {
+          groups = doc.data().items || [];
+          renderList();
+        } else {
+          const migrated = await checkAndMigrate();
+          if (migrated) {
+            loadGroupsFromCloud();
+          } else {
+            groups = JSON.parse(localStorage.getItem('solarGroupsList')) || [];
+            renderList();
+          }
+        }
+      }).catch((error) => {
+        console.error("خطأ في الاتصال السحابي:", error);
+        groups = JSON.parse(localStorage.getItem('solarGroupsList')) || [];
+        renderList();
+      });
+    }
+
+    function saveGroupsData() {
+      localStorage.setItem('solarGroupsList', JSON.stringify(groups));
+      db.collection("groupsData").doc("mainList").set({ items: groups }).catch((error) => {
+        console.error("خطأ في الحفظ السحابي:", error);
+      });
+    }
+
     function formatText(startTag, endTag) {
       const textarea = document.getElementById('postEditor');
       const start = textarea.selectionStart;
@@ -259,7 +326,7 @@
       savePostText(); autoResize(textarea);
     }
 
-    function autoResize(element) { element.style.height = 'auto'; element.style.height = (element.scrollHeight) + 'px'; }
+    function autoResize(element) { element.style.height = 'auto'; element.style.height = (element.scrollHeight + 2) + 'px'; }
 
     function savePostText() { localStorage.setItem('savedPostText', document.getElementById('postEditor').value); }
     
@@ -281,16 +348,12 @@
       });
     }
 
-    let groups = JSON.parse(localStorage.getItem('solarGroupsList')) || [];
-    let currentFilter = 'all';
-
-    function saveGroupsData() { localStorage.setItem('solarGroupsList', JSON.stringify(groups)); }
-
+    // تصدير متوافق 100% مع متصفحات الجوال عبر Blob
     function exportData() {
       if (groups.length === 0) return alert('القائمة فارغة لتصديرها!');
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(groups, null, 2));
+      const blob = new Blob([JSON.stringify(groups, null, 2)], { type: "application/json" });
       const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("href", URL.createObjectURL(blob));
       downloadAnchor.setAttribute("download", "groups_backup.json");
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
@@ -299,28 +362,44 @@
 
     function triggerImport() { document.getElementById('importFile').click(); }
 
+    // دالة استيراد معالجة للبيانات الفارغة والمعطوبة لمنع الشاشة البيضاء والانهيار
     function importData(event) {
       const file = event.target.files[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function(e) {
         try {
-          const imported = JSON.parse(e.target.result);
-          if (Array.isArray(imported)) {
+          let fileContent = (e.target.result || '').trim();
+          if (!fileContent) {
+            return alert('⚠️ ملف النسخة الاحتياطية فارغ ولا يحتوي على بيانات!');
+          }
+          if (fileContent.includes('data:')) fileContent = fileContent.substring(fileContent.indexOf(',') + 1);
+          if (fileContent.includes('%5B')) { try { fileContent = decodeURIComponent(fileContent); } catch(err){} }
+          
+          const arrStart = fileContent.indexOf('['), arrEnd = fileContent.lastIndexOf(']');
+          if (arrStart === -1 || arrEnd === -1) {
+            return alert('⚠️ ملف النسخة الاحتياطية غير صالح أو معطوب!');
+          }
+          
+          const imported = JSON.parse(fileContent.substring(arrStart, arrEnd + 1));
+          
+          if (Array.isArray(imported) && imported.length > 0) {
             showCustomConfirm(`تم العثور على ${imported.length} مجموعة.\nهل تريد استبدال القائمة الحالية؟\n(موافق = استبدال | إلغاء = دمج)`, () => {
               groups = imported;
-              saveGroupsData(); renderList(); alert('تم الاستيراد بنجاح!');
+              saveGroupsData(); renderList(); alert('تم الاستيراد والحفظ السحابي بنجاح!');
             }, () => {
               imported.forEach(impGroup => {
                 if (!groups.some(g => g.link.toLowerCase() === impGroup.link.toLowerCase())) groups.push(impGroup);
               });
-              saveGroupsData(); renderList(); alert('تم دمج المجموعات بنجاح!');
+              saveGroupsData(); renderList(); alert('تم دمج المجموعات والحفظ السحابي بنجاح!');
             });
-          } else alert('ملف غير صالح!');
-        } catch (err) { alert('حدث خطأ أثناء قراءة الملف.'); }
+          } else {
+            alert('⚠️ لم يتم العثور على أي مجموعات داخل الملف!');
+          }
+        } catch (err) { alert('حدث خطأ أثناء قراءة الملف. يرجى التأكد من سلامة ملف التصدير.'); }
       };
+      reader.onloadend = function() { document.getElementById('importFile').value = ''; };
       reader.readAsText(file);
-      event.target.value = ''; 
     }
 
     function addNewGroup() {
@@ -421,7 +500,6 @@
       }); 
     }
 
-    /* دالة إظهار نافذة التأكيد المخصصة العصرية */
     function showCustomConfirm(message, onConfirm, onCancel) {
       const overlay = document.createElement('div');
       overlay.className = 'custom-modal-overlay';
@@ -460,7 +538,8 @@
       const savedText = localStorage.getItem('savedPostText');
       const editor = document.getElementById('postEditor');
       if (savedText) { editor.value = savedText; autoResize(editor); }
-      renderList();
+      
+      loadGroupsFromCloud();
       document.getElementById('currentYear').textContent = new Date().getFullYear();
     };
   </script>
