@@ -210,7 +210,7 @@
         <button class="btn-reset" onclick="resetProgress()">🔄 إعادة تعيين الكل</button>
       </div>
       
-      <input type="text" id="searchInput" placeholder="🔍 ابحث عن اسم المجموعة..." oninput="renderList()">
+      <input type="text" id="searchInput" placeholder="🔍 ابحث عن اسم أو رابط المجموعة..." oninput="renderList()">
       
       <div class="filter-tabs">
         <button id="tab-all" class="active" onclick="setFilter('all')">الكل</button>
@@ -455,7 +455,7 @@
       }
 
       const filteredGroups = groups.filter(group => {
-        const matchesSearch = group.name.toLowerCase().includes(searchTerm);
+        const matchesSearch = group.name.toLowerCase().includes(searchTerm) || group.link.toLowerCase().includes(searchTerm);
         let matchesFilter = true;
         if (currentFilter === 'fav') matchesFilter = group.favorite === true;
         if (currentFilter === 'todo') matchesFilter = group.done === false;
