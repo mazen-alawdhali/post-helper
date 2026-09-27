@@ -46,7 +46,7 @@
     .toolbar button:active { background-color: #555; }
     .toolbar button:hover { background-color: #4A4B4C; }
 
-    #postEditor { width: 100%; min-height: 100px; padding: 12px; background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; border-radius: 8px; margin-bottom: 10px; font-size: 15px; outline: none; box-sizing: border-box; font-family: inherit; resize: none; overflow: hidden; }
+    #postEditor { width: 100%; min-height: 100px; padding: 12px; background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; border-radius: 8px; margin-bottom: 10px; font-size: 15px; outline: none; box-sizing: border-box; font-family: inherit; resize: none; overflow: hidden; scroll-margin-bottom: 60px; }
     #postEditor:focus { border-color: #4599FF; }
     #postEditor::placeholder { color: #B0B3B8; }
     
@@ -327,7 +327,7 @@
       savePostText(); autoResize(textarea);
     }
 
-    function autoResize(element) { element.style.height = 'auto'; element.style.height = (element.scrollHeight + 2) + 'px'; }
+    function autoResize(element) { const scrollY = window.scrollY; element.style.height = 'auto'; element.style.height = (element.scrollHeight + 2) + 'px'; window.scrollTo(0, scrollY); }
 
     function savePostText() { localStorage.setItem('savedPostText', document.getElementById('postEditor').value); }
     
