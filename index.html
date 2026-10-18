@@ -46,12 +46,57 @@
     .card { background: #242526; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); width: 100%; box-sizing: border-box; border: 1px solid #333; }
     .card h3 { margin: 0 0 10px 0; font-size: 16px; color: #E4E6EB; }
 
-    /* شريط تنسيق النص المدمج والصغير (مثل لوحة التحكم) */
+    /* شريط تنسيق النص والقائمة المنسدلة المخصصة بالكامل */
     .toolbar-rich { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; width: 100%; }
     
-    .toolbar-top-row { display: flex; gap: 6px; width: 100%; }
-    .font-dropdown { background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 12px; font-weight: bold; outline: none; flex: 1; }
+    .toolbar-top-row { display: flex; width: 100%; }
     
+    /* تصميم القائمة المنسدلة المخصصة المطابقة لصورة لوحة التحكم */
+    .custom-dropdown { position: relative; width: 100%; user-select: none; }
+    .dropdown-selected {
+      background-color: #242526;
+      color: #E4E6EB;
+      border: 1px solid #38393A;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .dropdown-selected:hover { border-color: #4599FF; }
+    .dropdown-arrow { color: #4599FF; font-size: 12px; transition: transform 0.2s; }
+    
+    .dropdown-options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 5px;
+      background-color: #242526;
+      border: 1px solid #38393A;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 1000;
+      display: none;
+      overflow: hidden;
+    }
+    .dropdown-options.show { display: block; }
+    .dropdown-options div {
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #E4E6EB;
+      cursor: pointer;
+      border-bottom: 1px solid #333;
+      transition: background 0.2s;
+    }
+    .dropdown-options div:last-child { border-bottom: none; }
+    .dropdown-options div:hover { background-color: #3A3B3C; color: #4599FF; }
+
     .toolbar-row { display: flex; gap: 4px; flex-wrap: wrap; width: 100%; }
     .toolbar-row button { background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 6px 2px; border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 12px; text-align: center; transition: background 0.2s; flex: 1; min-width: 32px; }
     .toolbar-row button:active { background-color: #555; }
@@ -183,22 +228,28 @@
     <!-- كارت كتابة المنشور -->
     <div class="card">
       <div class="toolbar-rich">
-        <!-- القائمة المنسدلة المدمجة للخطوط -->
+        <!-- القائمة المنسدلة المخصصة الاحترافية المطابقة للوحة التحكم -->
         <div class="toolbar-top-row">
-          <select id="fontSelect" onchange="changeEditorFont(this.value)" class="font-dropdown">
-            <option value="'Cairo', sans-serif">🔤 خط القاهرة (Cairo)</option>
-            <option value="'Tajawal', sans-serif">🔤 خط تجوال (Tajawal)</option>
-            <option value="'Amiri', serif">🔤 خط أميري (Amiri)</option>
-            <option value="'Reem Kufi', sans-serif">🔤 خط ريم كوفي (Reem Kufi)</option>
-          </select>
+          <div class="custom-dropdown" id="fontDropdownContainer">
+            <div class="dropdown-selected" onclick="toggleDropdown()">
+              <span id="selectedFontText">🔤 خط القاهرة (Cairo)</span>
+              <span class="dropdown-arrow">▼</span>
+            </div>
+            <div class="dropdown-options" id="dropdownOptionsList">
+              <div onclick="selectFont('\'Cairo\', sans-serif', '🔤 خط القاهرة (Cairo)')">🔤 خط القاهرة (Cairo)</div>
+              <div onclick="selectFont('\'Tajawal\', sans-serif', '🔤 خط تجوال (Tajawal)')">🔤 خط تجوال (Tajawal)</div>
+              <div onclick="selectFont('\'Amiri\', serif', '🔤 خط أميري (Amiri)')">🔤 خط أميري (Amiri)</div>
+              <div onclick="selectFont('\'Reem Kufi\', sans-serif', '🔤 خط ريم كوفي (Reem Kufi)')">🔤 خط ريم كوفي (Reem Kufi)</div>
+            </div>
+          </div>
         </div>
         
-        <!-- أزرار التنسيق المدمجة والصغيرة -->
+        <!-- أزرار التنسيق المدمجة -->
         <div class="toolbar-row">
           <button onclick="formatText('<b>', '</b>')" title="غامق"><b>B</b></button>
           <button onclick="formatText('<i>', '</i>')" title="مائل"><i>I</i></button>
           <button onclick="formatText('<u>', '</u>')" title="تحته خط"><u>U</u></button>
-          <button onclick="formatText('【 ', '  ') " title="عنوان مؤطر">H2</button>
+          <button onclick="formatText('【 ', ' 】')" title="عنوان مؤطر">H2</button>
           <button onclick="formatText('📌 ', '')" title="عنوان فرعي">H3</button>
           <button onclick="formatText('❝ ', ' ❞')" title="اقتباس">❝❞</button>
           <button onclick="insertSeparator()" title="سطر فاصل">══</button>
@@ -284,7 +335,7 @@
     let groups = [];
     let currentFilter = 'all';
     let isAppLocked = false;
-    const APP_PIN = "771005555#"; // كلمة المرور المحدثة المطلوبة
+    const APP_PIN = "771005555#"; // كلمة المرور المطلوبة
 
     function toggleAppLock() {
       if (!isAppLocked) {
@@ -316,9 +367,28 @@
       renderList();
     }
 
-    function changeEditorFont(fontName) {
-      document.getElementById('postEditor').style.fontFamily = fontName;
-      localStorage.setItem('selectedFont', fontName);
+    // دوال القائمة المنسدلة المخصصة
+    function toggleDropdown() {
+      const optionsList = document.getElementById('dropdownOptionsList');
+      optionsList.classList.toggle('show');
+    }
+
+    function selectFont(fontValue, fontNameText) {
+      document.getElementById('postEditor').style.fontFamily = fontValue;
+      document.getElementById('selectedFontText').textContent = fontNameText;
+      localStorage.setItem('selectedFont', fontValue);
+      localStorage.setItem('selectedFontName', fontNameText);
+      document.getElementById('dropdownOptionsList').classList.remove('show');
+    }
+
+    // إغلاق القائمة عند النقر خارجها
+    window.onclick = function(event) {
+      if (!event.target.closest('#fontDropdownContainer')) {
+        const optionsList = document.getElementById('dropdownOptionsList');
+        if (optionsList && optionsList.classList.contains('show')) {
+          optionsList.classList.remove('show');
+        }
+      }
     }
 
     // دالة الهجرة الآمنة من الذاكرة المحلية للجوال للسحابة
@@ -623,8 +693,13 @@
       if (savedText) { editor.value = savedText; autoResize(editor); }
       
       const savedFont = localStorage.getItem('selectedFont') || "'Cairo', sans-serif";
+      const savedFontName = localStorage.getItem('selectedFontName') || "🔤 خط القاهرة (Cairo)";
       editor.style.fontFamily = savedFont;
-      document.getElementById('fontSelect').value = savedFont;
+      document.getElementById('selectedFontText').textContent = savedFontName;
+      
+      // التطبيق يبدأ دائماً بحالة الفتح الطبيعية عند الدخول
+      isAppLocked = false;
+      applyLockState();
       
       loadGroupsFromCloud();
       document.getElementById('currentYear').textContent = new Date().getFullYear();
