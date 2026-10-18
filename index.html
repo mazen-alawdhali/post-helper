@@ -51,7 +51,7 @@
     
     .toolbar-top-row { display: flex; width: 100%; }
     
-    /* تصميم القائمة المنسدلة المخصصة المطابقة لصورة لوحة التحكم */
+    /* تصميم القائمة المنسدلة المخصصة */
     .custom-dropdown { position: relative; width: 100%; user-select: none; }
     .dropdown-selected {
       background-color: #242526;
@@ -169,6 +169,43 @@
     .btn-top { background: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 700; width: 100%; font-family: inherit; transition: 0.3s; margin-top: 5px; text-align: center; }
     .btn-top:hover { background: #4599FF; color: white; border-color: #4599FF; }
 
+    /* تصميم نافذة تسجيل الدخول (Modal) المطابقة لصورتك تماماً */
+    .auth-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: #18191A;
+      display: flex; justify-content: center; align-items: center;
+      z-index: 99999;
+      opacity: 1; transition: opacity 0.3s ease;
+    }
+    .auth-overlay.hidden { display: none; }
+    
+    .auth-modal {
+      background: #242526; border: 1px solid #38393A;
+      width: 85%; max-width: 380px; padding: 25px;
+      border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      text-align: center; font-family: 'Cairo', sans-serif;
+    }
+    .auth-title {
+      font-size: 18px; font-weight: 700; color: #4599FF;
+      margin-bottom: 8px;
+    }
+    .auth-subtitle {
+      font-size: 13px; color: #B0B3B8; margin-bottom: 20px;
+    }
+    .auth-input {
+      width: 100%; padding: 12px; background-color: #3A3B3C;
+      color: #E4E6EB; border: 1px solid #555; border-radius: 8px;
+      font-size: 14px; box-sizing: border-box; font-family: inherit;
+      text-align: center; margin-bottom: 15px; outline: none;
+    }
+    .auth-input:focus { border-color: #4599FF; }
+    .auth-btn {
+      width: 100%; background: #31A24C; color: white; border: none;
+      padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: 0.2s;
+    }
+    .auth-btn:hover { background: #2b8f42; }
+
     /* تصميم النافذة المنبثقة المخصصة (Custom Modal) */
     .custom-modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -219,16 +256,26 @@
 </head>
 <body>
 
+  <!-- نافذة تسجيل الدخول الإجبارية المطابقة لصورتك -->
+  <div id="authOverlay" class="auth-overlay">
+    <div class="auth-modal">
+      <div class="auth-title">منطقة الإدارة المحمية 🔒</div>
+      <div class="auth-subtitle">الرجاء إدخال كلمة المرور للمتابعة</div>
+      <input type="password" id="pinInput" class="auth-input" placeholder="كلمة المرور السرية" onkeydown="if(event.key === 'Enter') checkPin()">
+      <button class="auth-btn" onclick="checkPin()">دخول 🚀</button>
+    </div>
+  </div>
+
   <div class="app-container">
     <div class="header-bar">
       <h2 id="topAnchor">مساعد النشر 📢</h2>
-      <button id="lockToggleBtn" class="btn-lock" onclick="toggleAppLock()">🔓 مفتوح</button>
+      <button id="lockToggleBtn" class="btn-lock" onclick="toggleAppLock()">🔒 مقفل</button>
     </div>
 
     <!-- كارت كتابة المنشور -->
     <div class="card">
       <div class="toolbar-rich">
-        <!-- القائمة المنسدلة المخصصة الاحترافية المطابقة للوحة التحكم -->
+        <!-- القائمة المنسدلة المخصصة الاحترافية -->
         <div class="toolbar-top-row">
           <div class="custom-dropdown" id="fontDropdownContainer">
             <div class="dropdown-selected" onclick="toggleDropdown()">
@@ -334,21 +381,32 @@
 
     let groups = [];
     let currentFilter = 'all';
-    let isAppLocked = false;
+    
+    let isAppLocked = true;
     const APP_PIN = "771005555#"; // كلمة المرور المطلوبة
+
+    function checkPin() {
+      const input = document.getElementById('pinInput').value;
+      if (input === APP_PIN) {
+        isAppLocked = false;
+        localStorage.setItem('appUnlocked', 'true');
+        document.getElementById('authOverlay').classList.add('hidden');
+        applyLockState();
+      } else {
+        alert("كلمة المرور غير صحيحة!");
+        document.getElementById('pinInput').value = '';
+        document.getElementById('pinInput').focus();
+      }
+    }
 
     function toggleAppLock() {
       if (!isAppLocked) {
+        // قفل التطبيق وإظهار نافذة تسجيل الدخول من جديد
         isAppLocked = true;
+        localStorage.removeItem('appUnlocked');
+        document.getElementById('pinInput').value = '';
+        document.getElementById('authOverlay').classList.remove('hidden');
         applyLockState();
-      } else {
-        const inputPin = prompt("الرجاء إدخال الرقم السري لفتح لوحة التحكم:");
-        if (inputPin === APP_PIN) {
-          isAppLocked = false;
-          applyLockState();
-        } else if (inputPin !== null) {
-          alert("الرقم السري غير صحيح!");
-        }
       }
     }
 
@@ -356,12 +414,16 @@
       const btn = document.getElementById('lockToggleBtn');
       const protectedElems = document.querySelectorAll('.protected-section');
       if (isAppLocked) {
-        btn.innerHTML = '🔒 مقفل';
-        btn.classList.add('locked');
+        if (btn) {
+          btn.innerHTML = '🔒 مقفل';
+          btn.classList.add('locked');
+        }
         protectedElems.forEach(el => el.classList.add('locked-mode'));
       } else {
-        btn.innerHTML = '🔓 مفتوح';
-        btn.classList.remove('locked');
+        if (btn) {
+          btn.innerHTML = '🔓 مفتوح';
+          btn.classList.remove('locked');
+        }
         protectedElems.forEach(el => el.classList.remove('locked-mode'));
       }
       renderList();
@@ -381,7 +443,6 @@
       document.getElementById('dropdownOptionsList').classList.remove('show');
     }
 
-    // إغلاق القائمة عند النقر خارجها
     window.onclick = function(event) {
       if (!event.target.closest('#fontDropdownContainer')) {
         const optionsList = document.getElementById('dropdownOptionsList');
@@ -697,8 +758,14 @@
       editor.style.fontFamily = savedFont;
       document.getElementById('selectedFontText').textContent = savedFontName;
       
-      // التطبيق يبدأ دائماً بحالة الفتح الطبيعية عند الدخول
-      isAppLocked = false;
+      // فحص حالة القفل عند فتح الصفحة
+      if (localStorage.getItem('appUnlocked') === 'true') {
+        isAppLocked = false;
+        document.getElementById('authOverlay').classList.add('hidden');
+      } else {
+        isAppLocked = true;
+        document.getElementById('authOverlay').classList.remove('hidden');
+      }
       applyLockState();
       
       loadGroupsFromCloud();
