@@ -15,7 +15,8 @@
   <!-- أيقونة مكبر الصوت للمتصفح -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📢</text></svg>">
   
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- استدعاء خطوط Google المتعددة -->
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&family=Reem+Kufi:wght@500;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
   
   <!-- مكتبات Firebase السحابية -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -35,18 +36,28 @@
     }
     
     .app-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 15px; }
-    h2 { text-align: center; color: #4599FF; margin: 0 0 10px 0; font-weight: 700; }
     
+    .header-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+    h2 { text-align: center; color: #4599FF; margin: 0; font-weight: 700; flex: 1; }
+    
+    .btn-lock { background: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; font-family: inherit; }
+    .btn-lock.locked { background: #E41E3F; border-color: #E41E3F; color: white; }
+
     .card { background: #242526; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); width: 100%; box-sizing: border-box; border: 1px solid #333; }
     .card h3 { margin: 0 0 10px 0; font-size: 16px; color: #E4E6EB; }
 
-    /* شريط تنسيق النص */
-    .toolbar { display: flex; gap: 6px; margin-bottom: 10px; width: 100%; }
-    .toolbar button { flex: 1; background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 8px 2px; border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 12px; white-space: nowrap; text-align: center; transition: background 0.2s; }
-    .toolbar button:active { background-color: #555; }
-    .toolbar button:hover { background-color: #4A4B4C; }
+    /* شريط تنسيق النص المدمج والصغير (مثل لوحة التحكم) */
+    .toolbar-rich { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; width: 100%; }
+    
+    .toolbar-top-row { display: flex; gap: 6px; width: 100%; }
+    .font-dropdown { background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 12px; font-weight: bold; outline: none; flex: 1; }
+    
+    .toolbar-row { display: flex; gap: 4px; flex-wrap: wrap; width: 100%; }
+    .toolbar-row button { background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 6px 2px; border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 12px; text-align: center; transition: background 0.2s; flex: 1; min-width: 32px; }
+    .toolbar-row button:active { background-color: #555; }
+    .toolbar-row button:hover { background-color: #4A4B4C; }
 
-    #postEditor { width: 100%; min-height: 100px; padding: 12px; background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; border-radius: 8px; margin-bottom: 10px; font-size: 15px; outline: none; box-sizing: border-box; font-family: inherit; resize: none; overflow: hidden; scroll-margin-bottom: 60px; }
+    #postEditor { width: 100%; min-height: 120px; padding: 12px; background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; border-radius: 8px; margin-bottom: 10px; font-size: 15px; outline: none; box-sizing: border-box; font-family: 'Cairo', sans-serif; resize: none; overflow: hidden; scroll-margin-bottom: 60px; }
     #postEditor:focus { border-color: #4599FF; }
     #postEditor::placeholder { color: #B0B3B8; }
     
@@ -157,33 +168,56 @@
     .app-footer a { text-decoration: none; }
     .app-footer strong { color: #4599FF; font-weight: 700; transition: color 0.3s ease; }
     .app-footer a:hover strong { color: #2374E1; }
+    
+    .protected-section.locked-mode { display: none !important; }
   </style>
 </head>
 <body>
 
   <div class="app-container">
-    <h2 id="topAnchor">مساعد النشر 📢</h2>
+    <div class="header-bar">
+      <h2 id="topAnchor">مساعد النشر 📢</h2>
+      <button id="lockToggleBtn" class="btn-lock" onclick="toggleAppLock()">🔓 مفتوح</button>
+    </div>
 
     <!-- كارت كتابة المنشور -->
     <div class="card">
-      <div class="toolbar">
-        <button onclick="formatText('【 ', ' 】')" title="عنوان مؤطر">【 عنوان 】</button>
-        <button onclick="insertSeparator()" title="سطر فاصل">══ فاصل</button>
-        <button onclick="formatText('🔹 ', '')" title="نقطة قائمة">🔹 نقطة</button>
-        <button onclick="formatText('▫ ', '')" title="نقطة فرعية">▫ فرعي</button>
-        <button onclick="formatText('✅ ', '')" title="صح">✅ تم</button>
+      <div class="toolbar-rich">
+        <!-- القائمة المنسدلة المدمجة للخطوط -->
+        <div class="toolbar-top-row">
+          <select id="fontSelect" onchange="changeEditorFont(this.value)" class="font-dropdown">
+            <option value="'Cairo', sans-serif">🔤 خط القاهرة (Cairo)</option>
+            <option value="'Tajawal', sans-serif">🔤 خط تجوال (Tajawal)</option>
+            <option value="'Amiri', serif">🔤 خط أميري (Amiri)</option>
+            <option value="'Reem Kufi', sans-serif">🔤 خط ريم كوفي (Reem Kufi)</option>
+          </select>
+        </div>
+        
+        <!-- أزرار التنسيق المدمجة والصغيرة -->
+        <div class="toolbar-row">
+          <button onclick="formatText('<b>', '</b>')" title="غامق"><b>B</b></button>
+          <button onclick="formatText('<i>', '</i>')" title="مائل"><i>I</i></button>
+          <button onclick="formatText('<u>', '</u>')" title="تحته خط"><u>U</u></button>
+          <button onclick="formatText('【 ', '  ') " title="عنوان مؤطر">H2</button>
+          <button onclick="formatText('📌 ', '')" title="عنوان فرعي">H3</button>
+          <button onclick="formatText('❝ ', ' ❞')" title="اقتباس">❝❞</button>
+          <button onclick="insertSeparator()" title="سطر فاصل">══</button>
+          <button onclick="formatText('🔹 ', '')" title="نقطة قائمة">🔹</button>
+          <button onclick="formatText('▫ ', '')" title="نقطة فرعية">▫</button>
+          <button onclick="formatText('✅ ', '')" title="صح">✅</button>
+        </div>
       </div>
 
       <textarea id="postEditor" placeholder="اكتب نص المنشور هنا... (سيتم حفظه تلقائياً)" oninput="savePostText(); autoResize(this)"></textarea>
       
       <div class="actions-row">
         <button class="btn-copy" id="copyBtn" onclick="copyText()">📋 نسخ المنشور</button>
-        <button class="btn-clear" onclick="clearText()">🗑️ إزالة النص</button>
+        <button class="btn-clear protected-section" onclick="clearText()">🗑️ إزالة النص</button>
       </div>
     </div>
 
     <!-- كارت إضافة المجموعات -->
-    <div class="card">
+    <div class="card protected-section">
       <h3 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
         <span>إضافة مجموعة جديدة</span>
         <span id="totalGroupsBadge" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(69, 153, 255, 0.2); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; border: 1px solid rgba(69, 153, 255, 0.4); direction: ltr;">
@@ -208,7 +242,7 @@
     <div class="card">
       <div class="controls-header">
         <div id="progressCounter">إنجاز: <span>0</span> / 0</div>
-        <button class="btn-reset" onclick="resetProgress()">🔄 إعادة تعيين الكل</button>
+        <button class="btn-reset protected-section" onclick="resetProgress()">🔄 إعادة تعيين الكل</button>
       </div>
       
       <input type="text" id="searchInput" placeholder="🔍 ابحث عن اسم أو رابط المجموعة..." oninput="renderList()">
@@ -249,6 +283,43 @@
 
     let groups = [];
     let currentFilter = 'all';
+    let isAppLocked = false;
+    const APP_PIN = "771005555#"; // كلمة المرور المحدثة المطلوبة
+
+    function toggleAppLock() {
+      if (!isAppLocked) {
+        isAppLocked = true;
+        applyLockState();
+      } else {
+        const inputPin = prompt("الرجاء إدخال الرقم السري لفتح لوحة التحكم:");
+        if (inputPin === APP_PIN) {
+          isAppLocked = false;
+          applyLockState();
+        } else if (inputPin !== null) {
+          alert("الرقم السري غير صحيح!");
+        }
+      }
+    }
+
+    function applyLockState() {
+      const btn = document.getElementById('lockToggleBtn');
+      const protectedElems = document.querySelectorAll('.protected-section');
+      if (isAppLocked) {
+        btn.innerHTML = '🔒 مقفل';
+        btn.classList.add('locked');
+        protectedElems.forEach(el => el.classList.add('locked-mode'));
+      } else {
+        btn.innerHTML = '🔓 مفتوح';
+        btn.classList.remove('locked');
+        protectedElems.forEach(el => el.classList.remove('locked-mode'));
+      }
+      renderList();
+    }
+
+    function changeEditorFont(fontName) {
+      document.getElementById('postEditor').style.fontFamily = fontName;
+      localStorage.setItem('selectedFont', fontName);
+    }
 
     // دالة الهجرة الآمنة من الذاكرة المحلية للجوال للسحابة
     async function checkAndMigrate() {
@@ -349,10 +420,28 @@
       });
     }
 
-    // تصدير متوافق 100% مع متصفحات الجوال عبر Blob
-    function exportData() {
+    // تصدير وحفظ مخصص مع إمكانية تحديد مجلد الحفظ
+    async function exportData() {
       if (groups.length === 0) return alert('القائمة فارغة لتصديرها!');
-      const blob = new Blob([JSON.stringify(groups, null, 2)], { type: "application/json" });
+      const jsonStr = JSON.stringify(groups, null, 2);
+      
+      if ('showSaveFilePicker' in window) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: 'groups_backup.json',
+            types: [{ description: 'JSON File', accept: {'application/json': ['.json']} }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(jsonStr);
+          await writable.close();
+          alert('تم حفظ النسخة الاحتياطية بنجاح في المجلد المحدد!');
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') return;
+        }
+      }
+      
+      const blob = new Blob([jsonStr], { type: "application/json" });
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", URL.createObjectURL(blob));
       downloadAnchor.setAttribute("download", "groups_backup.json");
@@ -363,7 +452,6 @@
 
     function triggerImport() { document.getElementById('importFile').click(); }
 
-    // دالة استيراد معالجة للبيانات الفارغة والمعطوبة لمنع الشاشة البيضاء والانهيار
     function importData(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -371,16 +459,12 @@
       reader.onload = function(e) {
         try {
           let fileContent = (e.target.result || '').trim();
-          if (!fileContent) {
-            return alert('⚠️ ملف النسخة الاحتياطية فارغ ولا يحتوي على بيانات!');
-          }
+          if (!fileContent) return alert('⚠️ ملف النسخة الاحتياطية فارغ ولا يحتوي على بيانات!');
           if (fileContent.includes('data:')) fileContent = fileContent.substring(fileContent.indexOf(',') + 1);
           if (fileContent.includes('%5B')) { try { fileContent = decodeURIComponent(fileContent); } catch(err){} }
           
           const arrStart = fileContent.indexOf('['), arrEnd = fileContent.lastIndexOf(']');
-          if (arrStart === -1 || arrEnd === -1) {
-            return alert('⚠️ ملف النسخة الاحتياطية غير صالح أو معطوب!');
-          }
+          if (arrStart === -1 || arrEnd === -1) return alert('⚠️ ملف النسخة الاحتياطية غير صالح أو معطوب!');
           
           const imported = JSON.parse(fileContent.substring(arrStart, arrEnd + 1));
           
@@ -397,7 +481,7 @@
           } else {
             alert('⚠️ لم يتم العثور على أي مجموعات داخل الملف!');
           }
-        } catch (err) { alert('حدث خطأ أثناء قراءة الملف. يرجى التأكد من سلامة ملف التصدير.'); }
+        } catch (err) { alert('حدث خطأ أثناء قراءة الملف.'); }
       };
       reader.onloadend = function() { document.getElementById('importFile').value = ''; };
       reader.readAsText(file);
@@ -441,14 +525,11 @@
       listContainer.innerHTML = '';
       
       const searchTerm = (document.getElementById('searchInput').value || '').toLowerCase();
-      
       const doneCount = groups.filter(g => g.done).length;
       document.getElementById('progressCounter').innerHTML = `إنجاز: <span>${doneCount}</span> / ${groups.length}`;
       
       const groupsCountNum = document.getElementById('groupsCountNum');
-      if (groupsCountNum) {
-        groupsCountNum.textContent = groups.length;
-      }
+      if (groupsCountNum) groupsCountNum.textContent = groups.length;
 
       if (groups.length === 0) {
         listContainer.innerHTML = '<div style="text-align:center; color:#B0B3B8; font-size: 14px; padding:10px;">لا توجد مجموعات مضافة بعد.</div>';
@@ -473,8 +554,9 @@
         const originalIndex = groups.findIndex(g => g.link === group.link);
         const isFav = group.favorite ? '⭐' : '☆';
         const favClass = group.favorite ? 'favorite' : '';
-        const item = document.createElement('div');
+        const deleteBtnHtml = isAppLocked ? '' : `<button class="btn-delete" onclick="deleteGroup(${originalIndex})">حذف</button>`;
         
+        const item = document.createElement('div');
         item.className = `group-item ${group.done ? 'done' : ''} ${favClass}`;
         item.innerHTML = `
           <div class="group-info">
@@ -485,7 +567,7 @@
           </div>
           <div class="group-actions">
             <button class="btn-open" onclick="openGroup('${group.link}')">فتح</button>
-            <button class="btn-delete" onclick="deleteGroup(${originalIndex})">حذف</button>
+            ${deleteBtnHtml}
           </div>
         `;
         listContainer.appendChild(item);
@@ -539,6 +621,10 @@
       const savedText = localStorage.getItem('savedPostText');
       const editor = document.getElementById('postEditor');
       if (savedText) { editor.value = savedText; autoResize(editor); }
+      
+      const savedFont = localStorage.getItem('selectedFont') || "'Cairo', sans-serif";
+      editor.style.fontFamily = savedFont;
+      document.getElementById('fontSelect').value = savedFont;
       
       loadGroupsFromCloud();
       document.getElementById('currentYear').textContent = new Date().getFullYear();
