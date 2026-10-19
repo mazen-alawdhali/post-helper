@@ -12,6 +12,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="مساعد النشر">
   
+  <!-- ربط ملف المانيست الخارجي لتجاوز فحص المتجر -->
+  <link rel="manifest" href="./site.webmanifest">
+
   <!-- أيقونة مكبر الصوت للمتصفح -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📢</text></svg>">
   
@@ -169,7 +172,7 @@
     .btn-top { background: #3A3B3C; color: #E4E6EB; border: 1px solid #555; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 700; width: 100%; font-family: inherit; transition: 0.3s; margin-top: 5px; text-align: center; }
     .btn-top:hover { background: #4599FF; color: white; border-color: #4599FF; }
 
-    /* تصميم نافذة تسجيل الدخول (Modal) المطابقة لصورتك تماماً */
+    /* تصميم نافذة تسجيل الدخول (Modal) */
     .auth-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: #18191A;
@@ -256,7 +259,7 @@
 </head>
 <body>
 
-  <!-- نافذة تسجيل الدخول الإجبارية المطابقة لصورتك -->
+  <!-- نافذة تسجيل الدخول الإجبارية -->
   <div id="authOverlay" class="auth-overlay">
     <div class="auth-modal">
       <div class="auth-title">منطقة الإدارة المحمية 🔒</div>
@@ -275,7 +278,7 @@
     <!-- كارت كتابة المنشور -->
     <div class="card">
       <div class="toolbar-rich">
-        <!-- القائمة المنسدلة المخصصة الاحترافية -->
+        <!-- القائمة المنسدلة المخصصة الاحترافية للخطوط (تغير خط المحرر بالكامل لنظافة النص للنشر) -->
         <div class="toolbar-top-row">
           <div class="custom-dropdown" id="fontDropdownContainer">
             <div class="dropdown-selected" onclick="toggleDropdown()">
@@ -429,7 +432,7 @@
       renderList();
     }
 
-    // دوال القائمة المنسدلة المخصصة
+    // دوال القائمة المنسدلة المخصصة للخط (نظيف وخالٍ من الوسوم للنشر الآمن)
     function toggleDropdown() {
       const optionsList = document.getElementById('dropdownOptionsList');
       optionsList.classList.toggle('show');
