@@ -105,7 +105,7 @@
     .toolbar-row button:active { background-color: #555; }
     .toolbar-row button:hover { background-color: #4A4B4C; }
 
-    #postEditor { width: 100%; min-height: 120px; padding: 12px; background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; border-radius: 8px; margin-bottom: 10px; font-size: 15px; outline: none; box-sizing: border-box; font-family: 'Cairo', sans-serif; resize: none; overflow: hidden; scroll-margin-bottom: 60px; }
+    #postEditor { width: 100%; min-height: 250px; padding: 12px; background-color: #3A3B3C; color: #E4E6EB; border: 1px solid #555; border-radius: 8px; margin-bottom: 10px; font-size: 15px; outline: none; box-sizing: border-box; font-family: inherit; resize: vertical; overflow-y: auto; -webkit-overflow-scrolling: touch; scroll-margin-bottom: 60px; }
     #postEditor:focus { border-color: #4599FF; }
     #postEditor::placeholder { color: #B0B3B8; }
     
@@ -278,7 +278,7 @@
     <!-- كارت كتابة المنشور -->
     <div class="card">
       <div class="toolbar-rich">
-        <!-- القائمة المنسدلة المخصصة الاحترافية للخطوط (تغير خط المحرر بالكامل لنظافة النص للنشر) -->
+        <!-- القائمة المنسدلة المخصصة الاحترافية للخطوط (مع إضافة الخط الافتراضي) -->
         <div class="toolbar-top-row">
           <div class="custom-dropdown" id="fontDropdownContainer">
             <div class="dropdown-selected" onclick="toggleDropdown()">
@@ -286,6 +286,7 @@
               <span class="dropdown-arrow">▼</span>
             </div>
             <div class="dropdown-options" id="dropdownOptionsList">
+              <div onclick="selectFont('inherit', '🔤 الخط الافتراضي (Default)')">🔤 الخط الافتراضي (Default)</div>
               <div onclick="selectFont('\'Cairo\', sans-serif', '🔤 خط القاهرة (Cairo)')">🔤 خط القاهرة (Cairo)</div>
               <div onclick="selectFont('\'Tajawal\', sans-serif', '🔤 خط تجوال (Tajawal)')">🔤 خط تجوال (Tajawal)</div>
               <div onclick="selectFont('\'Amiri\', serif', '🔤 خط أميري (Amiri)')">🔤 خط أميري (Amiri)</div>
@@ -432,7 +433,7 @@
       renderList();
     }
 
-    // دوال القائمة المنسدلة المخصصة للخط (نظيف وخالٍ من الوسوم للنشر الآمن)
+    // دوال القائمة المنسدلة المخصصة للخط
     function toggleDropdown() {
       const optionsList = document.getElementById('dropdownOptionsList');
       optionsList.classList.toggle('show');
@@ -532,7 +533,12 @@
       savePostText(); autoResize(textarea);
     }
 
-    function autoResize(element) { const scrollY = window.scrollY; element.style.height = 'auto'; element.style.height = (element.scrollHeight + 2) + 'px'; window.scrollTo(0, scrollY); }
+    function autoResize(element) { 
+      const scrollY = window.scrollY; 
+      element.style.height = 'auto'; 
+      element.style.height = (element.scrollHeight + 4) + 'px'; 
+      window.scrollTo(0, scrollY); 
+    }
 
     function savePostText() { localStorage.setItem('savedPostText', document.getElementById('postEditor').value); }
     
